@@ -9,46 +9,41 @@ namespace NexteAPI.Services.Providers
 {
     public class RejectAuthProvider : IAuthProvider
     {
-        IOptions<SystemConfig> options;
-        public RejectAuthProvider(IOptions<SystemConfig> _options)
+        public TypeAuthProvider Type { get; } = TypeAuthProvider.Reject;
+
+        public async Task<AuthLoginResponse> LoginAsync(string username, string password)
         {
-            options = _options;
+            return new AuthLoginResponse() { Successful = false, Message= "Auth Rejected" };
         }
 
-
-
-        public async Task<UserProfile> LoginAsync(string username, string password)
-        {
-            throw new System.NotImplementedException();
-        }
         public async Task LogoutAsync(string accessToken)
         {
-            throw new System.NotImplementedException();
+            return;
         }
 
         public async Task<HasJoinedResponse> HasJoinedAsync(string username, string serverId)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public async Task<bool> JoinAsync(string accessToken, string userUUID, string serverId)
         {
-            throw new System.NotImplementedException();
+            return false;
         }
 
         public async Task<PrivilegesResponse> PrivilegesAsync(string userUUID)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public async Task<ProfileResponse> ProfileAsync(string userUUID)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public async Task<ProfilesResponse[]> ProfilesAsync(string[] users)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
     }
 }

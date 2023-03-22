@@ -1,10 +1,12 @@
-﻿namespace NexteAPI.DTO.AuthResponses
+﻿using NexteAPI.Entity;
+using System.Net;
+
+namespace NexteAPI.DTO.AuthResponses
 {
     public class HasJoinedResponse
     {
-        public string UserUUID { get; set; }
-        public string SkinUrl { get; set; }
-        public string CloakUrl { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public Profile Data { get; set; }
 
     }
 }

@@ -91,7 +91,9 @@ namespace NexteAPI
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ITexturesService, TexturesService>();
             services.AddSingleton<IAuthlibService, AuthlibService>();
-            
+            services.AddSingleton<IWebRequestService, WebRequestService>();
+
+
             services.AddHostedService<ConsoleReader>(); 
             services.AddHostedService<MainService>();
 

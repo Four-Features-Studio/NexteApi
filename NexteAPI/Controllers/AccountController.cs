@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using NexteAPI.DTO.AuthRequestes;
 using NexteAPI.DTO.AuthResponses;
 using NexteAPI.Entity;
@@ -25,14 +26,16 @@ namespace NexteAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody]AuthLoginRequest authLogin)
         {
-            var profile = await provider.LoginAsync(authLogin.Username, authLogin.Password);
+            var data = await provider.LoginAsync(authLogin.Username, authLogin.Password);
 
-            if (profile is null)
+            if (data.Successful is false)
                 return BadRequest(new AuthLoginResponse()
                 {
-                    Successful = true,
-                    Message = "Не верный логин или пароль"
+                    Successful = false,
+                    Message = data.Message
                 });
+
+            var profile = data.Profile;
 
             var result = new AuthLoginResponse()
             {

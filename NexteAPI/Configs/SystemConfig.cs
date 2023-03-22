@@ -12,7 +12,7 @@
 
         public AuthProviderOptions AuthProvider { get; set; }
 
-        //public TexturesOptions TexturesOptions { get; set; }
+        public TexturesOptions TexturesOptions { get; set; }
 
         public FileServiceOptions FileServiceOptions { get; set; }
 

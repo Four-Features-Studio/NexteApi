@@ -45,33 +45,28 @@ namespace NexteAPI.Controllers.Minecraft
         [HttpGet]
         public async Task<IActionResult> HasJoined([FromQuery] string username, [FromQuery] string serverId)
         {
-
             var data = await provider.HasJoinedAsync(username, serverId);
 
-            if (data is null)
+            if (data is null || data.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 ReturnBadRequest();
             }
-
-            var texture = await textures.GetTextures(data.UserUUID, username, data.SkinUrl, data.CloakUrl);
-            var json = JsonConvert.SerializeObject(texture);
+            var json = JsonConvert.SerializeObject(data.Data);
 
             return Ok(json);
         }
 
         [HttpGet]
         [Route("{uuid}")]
-        public async Task<IActionResult> Profile(string uuid,[FromQuery]bool unsigned = false)
+        public async Task<IActionResult> Profile(string uuid, [FromQuery]bool unsigned = false)
         {
             var data = await provider.ProfileAsync(uuid);
 
-            if(data is null)
+            if(data is null || data.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 ReturnBadRequest();
             }
-
-            var texture = await textures.GetTextures(data.UserUUID, data.Username, data.SkinUrl, data.CloakUrl);
-            var json = JsonConvert.SerializeObject(texture);
+            var json = JsonConvert.SerializeObject(data.Data);
 
             return Ok(json);
         }

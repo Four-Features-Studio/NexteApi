@@ -8,6 +8,7 @@ using NexteAPI.EFCore;
 using NexteAPI.Entity;
 using NexteAPI.Interfaces;
 using NexteServer.Efcore;
+using Org.BouncyCastle.Bcpg.Sig;
 using System;
 using System.Linq;
 using System.Text;
@@ -19,13 +20,17 @@ namespace NexteAPI.Services.Providers
     {
         SystemConfig options;
         IServiceScopeFactory scopeFactory;
-        public DataBaseAuthProvider(IOptions<SystemConfig> _options, IServiceScopeFactory _scopeFactory)
+        ITexturesService textures;
+        public DataBaseAuthProvider(IOptions<SystemConfig> _options, IServiceScopeFactory _scopeFactory, ITexturesService _textures)
         {
             scopeFactory = _scopeFactory;
             options = _options.Value;
+            textures = _textures;
         }
 
-        public async Task<UserProfile> LoginAsync(string username, string password)
+        public TypeAuthProvider Type { get; } = TypeAuthProvider.Database;
+
+        public async Task<AuthLoginResponse> LoginAsync(string username, string password)
         {
             using (var scope = scopeFactory.CreateScope())
             {
@@ -57,23 +62,28 @@ namespace NexteAPI.Services.Providers
                     var user = await db.Users.FirstOrDefaultAsync(x => x.Username == username && x.Password == hash_password);
 
                     if (user is null)
-                        return null;
+                        return new AuthLoginResponse() { Successful = false, Message = "Неверный логин или пароль" };
 
                     user.AccessToken = Guid.NewGuid().ToString();
                     await db.SaveChangesAsync();
 
-                    var userProfile = new UserProfile()
+                    var result = new AuthLoginResponse()
                     {
-                        Username = user.Username,
-                        AccessToken = user.AccessToken,
-                        Uuid = user.Uuid.ToString()
+                        Successful = true,
+                        Profile = new UserProfile()
+                        {
+                            AccessToken = user.AccessToken,
+                            Username = user.Username,
+                            Uuid = user.Uuid.ToString(),
+                            Avatar = user.Avatar
+                        }
                     };
 
-                    return userProfile;
+                    return result;
 
                 }
 
-                return null;
+                return new AuthLoginResponse() { Successful = false, Message = "Неверный логин или пароль" };
             }
         }
         public async Task LogoutAsync(string accessToken)
@@ -99,15 +109,17 @@ namespace NexteAPI.Services.Providers
                 var user = await db.Users.FirstOrDefaultAsync(x => x.Username == username && x.ServerId == serverId);
 
                 if (user is null)
-                    return null;
+                    return new HasJoinedResponse()
+                    {
+                        StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    };
 
+                var profile = await textures.GetTextures(user.Uuid.ToString(), user.Username, user.SkinUrl, user.CloakUrl);
                 var result = new HasJoinedResponse()
                 {
-                    UserUUID = user.Uuid.ToString(),
-                    CloakUrl = user.CloakUrl,
-                    SkinUrl = user.SkinUrl
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Data = profile
                 };
-
                 return result;
             }
         }
@@ -160,14 +172,16 @@ namespace NexteAPI.Services.Providers
                 var user = await db.Users.FirstOrDefaultAsync(x => x.Uuid.ToString() == userUUID);
 
                 if (user is null)
-                    return null;
+                    return new ProfileResponse()
+                    {
+                        StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    };
 
+                var profile = await textures.GetTextures(user.Uuid.ToString(), user.Username, user.SkinUrl, user.CloakUrl);
                 var result = new ProfileResponse()
                 {
-                    UserUUID = user.Uuid.ToString(),
-                    Username = user.Username,
-                    CloakUrl = user.CloakUrl,
-                    SkinUrl = user.SkinUrl
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Data = profile
                 };
 
                 return result;

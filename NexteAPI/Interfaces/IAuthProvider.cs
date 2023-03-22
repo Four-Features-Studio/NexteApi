@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NexteAPI.Configs;
 using NexteAPI.DTO.AuthRequestes;
 using NexteAPI.DTO.AuthResponses;
 using NexteAPI.Entity;
@@ -9,7 +10,9 @@ namespace NexteAPI.Interfaces
 {
     public interface IAuthProvider
     {
-        Task<UserProfile> LoginAsync(string username, string password);
+        TypeAuthProvider Type { get; }
+
+        Task<AuthLoginResponse> LoginAsync(string username, string password);
         Task LogoutAsync(string accessToken);
         Task<bool> JoinAsync(string accessToken, string userUUID, string serverId);
         Task<HasJoinedResponse> HasJoinedAsync(string username, string serverId);

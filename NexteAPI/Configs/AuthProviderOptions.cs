@@ -3,9 +3,10 @@
     public class AuthProviderOptions
     {
         public TypeAuthProvider Type { get; set; } = TypeAuthProvider.Json;
-        public ConnectionOptions Connection { get; set; } = null!;
 
+        public ConnectionOptions Connection { get; set; } = null!;
         public string JsonUrl { get; set; } = "https://example.com/";
+        public JsonActionsOptions JsonActionsUrl { get; set; } = null!;
 
         public TypePasswordHash PasswordHashMethod { get; set; } = TypePasswordHash.SHA1;
     }
