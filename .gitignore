@@ -1,0 +1,7 @@
+NexteApi/obj/
+NexteApi/bin/
+NexteApi/Properties/PublishProfiles
+NexteApi/NexteApi.csproj.user
+packages/
+.vs/
+NexteApi/appsettings.json
